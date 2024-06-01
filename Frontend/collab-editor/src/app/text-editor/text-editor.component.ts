@@ -23,21 +23,40 @@ const TOOLBAR_OPTIONS = [
 })
 export class TextEditorComponent implements OnInit {
 
-  private textEditorService = inject(TextEditorService);
+  private textEditorService = inject(TextEditorService)
 
   ngOnInit() {
-    const container = document.querySelector('.container');
-    const newDiv = document.createElement('div');
-    container?.appendChild(newDiv);
+
+    this.textEditorService.connect()
+
+    const container = document.querySelector('.container')
+    const newDiv = document.createElement('div')
+
+    container?.appendChild(newDiv)
+
     const quill = new Quill(newDiv, {
       modules: {
         toolbar: TOOLBAR_OPTIONS
       },
       theme: 'snow', // or 'bubble'
-    });
+    })
+
+    quill.on('text-change', (delta, oldDelta, source) => {
+      if (source !== 'user') {
+        return
+      }
+
+      this.textEditorService.emit('send-changes', delta)
+
+    })
+
+    this.textEditorService.on('receive-changes', (delta) => {
+      quill.updateContents(delta)
+    })
+
   }
 
   ngOnDestroy(): void {
-    this.textEditorService.disconnect();
+    this.textEditorService.disconnect()
   }
 }
