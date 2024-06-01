@@ -9,4 +9,8 @@ export class TextEditorService {
   private socket = io('http://localhost:3000');
 
   constructor() { }
+
+  disconnect() {
+    this.socket.disconnect();
+  }
 }

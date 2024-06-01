@@ -36,4 +36,8 @@ export class TextEditorComponent implements OnInit {
       theme: 'snow', // or 'bubble'
     });
   }
+
+  ngOnDestroy(): void {
+    this.textEditorService.disconnect();
+  }
 }
