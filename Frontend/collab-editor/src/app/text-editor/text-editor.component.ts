@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import Quill from 'quill';
+import { TextEditorService } from '../text-editor.service';
 
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -21,6 +22,9 @@ const TOOLBAR_OPTIONS = [
   styleUrl: './text-editor.component.css',
 })
 export class TextEditorComponent implements OnInit {
+
+  private textEditorService = inject(TextEditorService);
+
   ngOnInit() {
     const container = document.querySelector('.container');
     const newDiv = document.createElement('div');
