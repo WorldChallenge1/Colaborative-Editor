@@ -21,13 +21,15 @@ public class SocketModule {
         this.socketService = socketService;
         this.server.addConnectListener(this.onConnected());
         this.server.addDisconnectListener(this.onDisconnected());
-        this.server.addEventListener("send-changes", Object.class, this.onChanges());
+        this.server.addEventListener("send-changes", Data.class, this.onChanges());
         this.server.addEventListener("receive-changes", Object.class, this.onReceiveChanges());
+        this.server.addEventListener("get-document", Object.class, this.onGetDocument());
     }
 
-    private DataListener<Object> onChanges() {
+    private DataListener<Data> onChanges() {
         return (senderClient, data, ackSender) -> {
-            log.info("Sender: " + senderClient.getSessionId().toString() + " -> Data: " + data.toString());
+            log.info("Sender: " + senderClient.getSessionId().toString() + " -> Data: " +
+                    data.toString());
             this.socketService.sendSocketChanges(senderClient, data);
         };
     }
@@ -35,6 +37,14 @@ public class SocketModule {
     private DataListener<Object> onReceiveChanges() {
         return (senderClient, data, ackSender) -> {
             log.info("Receiver: " + senderClient.getSessionId().toString() + " -> Data: " + data.toString());
+        };
+    }
+
+    private DataListener<Object> onGetDocument() {
+        return (senderClient, data, ackSender) -> {
+            String documentId = (String) data;
+            this.socketService.getDocument(senderClient, documentId);
+            log.info("Receiver: " + senderClient.getSessionId().toString() + " -> Document: " + documentId);
         };
     }
 

@@ -21,12 +21,16 @@ export class TextEditorService {
 
   emit(event: string, data: any) {
     if (!this.socket) return;
-    console.log(event, data);
     this.socket.emit(event, data);
   }
 
   on(event: string, callback: (data: any) => void) {
     if (!this.socket) return;
     this.socket.on(event, callback);
+  }
+
+  once(event: string, callback: (data: any) => void) {
+    if (!this.socket) return;
+    this.socket.once(event, callback);
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import Quill from 'quill';
 import { TextEditorService } from '../text-editor.service';
+import { ActivatedRoute } from '@angular/router';
 
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -24,10 +25,20 @@ const TOOLBAR_OPTIONS = [
 export class TextEditorComponent implements OnInit {
 
   private textEditorService = inject(TextEditorService)
+  private route = inject(ActivatedRoute)
 
   ngOnInit() {
 
     this.textEditorService.connect()
+
+    const documentId = this.route.snapshot.paramMap.get('id')
+
+    this.textEditorService.once("load-document", (document) => {
+      quill.setContents(document)
+      quill.enable()
+    })
+
+    this.textEditorService.emit('get-document', documentId)
 
     const container = document.querySelector('.container')
     const newDiv = document.createElement('div')
@@ -41,14 +52,19 @@ export class TextEditorComponent implements OnInit {
       theme: 'snow', // or 'bubble'
     })
 
-    quill.on('text-change', (delta, oldDelta, source) => {
+
+    quill.on('text-change', (delta: any, oldDelta, source) => {
       if (source !== 'user') {
         return
       }
-
+      delta["documentID"] = documentId
       this.textEditorService.emit('send-changes', delta)
 
+
     })
+
+    quill.disable()
+    quill.setText('Loading...')
 
     this.textEditorService.on('receive-changes', (delta) => {
       quill.updateContents(delta)
