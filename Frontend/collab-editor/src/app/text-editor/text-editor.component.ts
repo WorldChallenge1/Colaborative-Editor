@@ -15,6 +15,8 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ]
 
+const SAVE_INTERVAL_MS = 2000
+
 @Component({
   selector: 'app-text-editor',
   standalone: true,
@@ -34,7 +36,10 @@ export class TextEditorComponent implements OnInit {
     const documentId = this.route.snapshot.paramMap.get('id')
 
     this.textEditorService.once("load-document", (document) => {
-      quill.setContents(document)
+      const content: any = {
+        ops: document[0]["ops"]
+      }
+      quill.setContents(content)
       quill.enable()
     })
 
@@ -60,6 +65,7 @@ export class TextEditorComponent implements OnInit {
       delta["documentID"] = documentId
       this.textEditorService.emit('send-changes', delta)
 
+      console.log(JSON.stringify(quill.getContents()))
 
     })
 
@@ -69,6 +75,15 @@ export class TextEditorComponent implements OnInit {
     this.textEditorService.on('receive-changes', (delta) => {
       quill.updateContents(delta)
     })
+
+
+    const interval = setInterval(() => {
+      const quillContents = quill.getContents()
+      let data: any = quillContents
+      data["documentID"] = documentId
+      data["id"] = documentId
+      this.textEditorService.emit("save-document", data)
+    }, SAVE_INTERVAL_MS)
 
   }
 

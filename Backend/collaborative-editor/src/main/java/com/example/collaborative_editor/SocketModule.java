@@ -6,6 +6,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.example.collaborative_editor.data.Data;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +25,7 @@ public class SocketModule {
         this.server.addEventListener("send-changes", Data.class, this.onChanges());
         this.server.addEventListener("receive-changes", Object.class, this.onReceiveChanges());
         this.server.addEventListener("get-document", Object.class, this.onGetDocument());
+        this.server.addEventListener("save-document", Data.class, this.onSaveDocument());
     }
 
     private DataListener<Data> onChanges() {
@@ -45,6 +47,13 @@ public class SocketModule {
             String documentId = (String) data;
             this.socketService.getDocument(senderClient, documentId);
             log.info("Receiver: " + senderClient.getSessionId().toString() + " -> Document: " + documentId);
+        };
+    }
+
+    private DataListener<Data> onSaveDocument() {
+        return (senderClient, data, ackSender) -> {
+            this.socketService.saveDocument(data);
+            log.info("Receiver: " + senderClient.getSessionId().toString() + " -> Data: " + data.toString());
         };
     }
 
