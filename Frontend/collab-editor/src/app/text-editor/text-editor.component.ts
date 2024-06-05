@@ -36,10 +36,14 @@ export class TextEditorComponent implements OnInit {
     const documentId = this.route.snapshot.paramMap.get('id')
 
     this.textEditorService.once("load-document", (document) => {
-      const content: any = {
-        ops: document[0]["ops"]
+      if (document.length !== 0) {
+        const content: any = {
+          ops: document[0]["ops"]
+        }
+        quill.setContents(content)
+      } else {
+        quill.setText('')
       }
-      quill.setContents(content)
       quill.enable()
     })
 
@@ -77,7 +81,7 @@ export class TextEditorComponent implements OnInit {
     })
 
 
-    const interval = setInterval(() => {
+    setInterval(() => {
       const quillContents = quill.getContents()
       let data: any = quillContents
       data["documentID"] = documentId
@@ -86,6 +90,7 @@ export class TextEditorComponent implements OnInit {
     }, SAVE_INTERVAL_MS)
 
   }
+
 
   ngOnDestroy(): void {
     this.textEditorService.disconnect()
