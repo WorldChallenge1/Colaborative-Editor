@@ -11,12 +11,10 @@ import jakarta.persistence.Id;
 @Entity
 public class Data {
 
-    @Id
-    private String id;
-
     @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
     private List<Op> ops;
 
+    @Id
     @Column
     private String documentID;
 }

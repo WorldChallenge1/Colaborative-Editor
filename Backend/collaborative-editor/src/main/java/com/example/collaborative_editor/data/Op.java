@@ -8,4 +8,5 @@ public class Op {
     private String insert;
     private Long retain;
     private Long delete;
+    private Attribute attributes;
 }

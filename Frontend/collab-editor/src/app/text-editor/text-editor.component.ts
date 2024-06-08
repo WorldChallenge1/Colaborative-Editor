@@ -11,7 +11,8 @@ const TOOLBAR_OPTIONS = [
   [{ color: [] }, { background: [] }],
   [{ script: "sub" }, { script: "super" }],
   [{ align: [] }],
-  ["image", "blockquote", "code-block"],
+  // ["image", "blockquote", "code-block"],
+  ["blockquote", "code-block"],
   ["clean"],
 ]
 
@@ -77,6 +78,7 @@ export class TextEditorComponent implements OnInit {
     quill.setText('Loading...')
 
     this.textEditorService.on('receive-changes', (delta) => {
+      console.log(JSON.stringify(delta))
       quill.updateContents(delta)
     })
 
@@ -85,7 +87,6 @@ export class TextEditorComponent implements OnInit {
       const quillContents = quill.getContents()
       let data: any = quillContents
       data["documentID"] = documentId
-      data["id"] = documentId
       this.textEditorService.emit("save-document", data)
     }, SAVE_INTERVAL_MS)
 
